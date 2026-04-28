@@ -3,6 +3,13 @@
 > Proyecto académico — Gerencia de Proyectos Informáticos
 > Politécnico Grancolombiano · 2026
 
+## Enlaces
+
+- **App en vivo:** https://canvet.onrender.com
+- **Repositorio:** https://github.com/dduenas2/canvet-poligrancolombiano
+
+> El plan gratuito de Render duerme la app tras 15 min de inactividad; la primera carga puede tardar 30–60 s.
+
 ## Descripción
 
 **CanVet** es una aplicación web full-stack para la gestión integral de servicios de atención canina en clínicas veterinarias. Cubre 5 categorías de servicios: salud preventiva y correctiva, estética y relajación, nutrición, guardería y servicios funerarios.
@@ -39,15 +46,14 @@
 
 ```bash
 # 1. Clonar el repositorio
-git clone <url-del-repo>
-cd canvet
+git clone https://github.com/dduenas2/canvet-poligrancolombiano.git
+cd canvet-poligrancolombiano
 
 # 2. Instalar todas las dependencias
 npm run install:all
 
 # 3. Configurar variables de entorno
 cp .env.example server/.env
-# Editar server/.env con tus datos
 ```
 
 **Variables de entorno (`server/.env`):**
@@ -56,15 +62,19 @@ MONGODB_URI=mongodb+srv://usuario:password@cluster.mongodb.net/canvet
 JWT_SECRET=canvet_secret_key_2026
 PORT=5000
 NODE_ENV=development
+
+# Modo desarrollo sin instalar MongoDB: arranca mongodb-memory-server
+# y siembra datos de ejemplo automáticamente al iniciar el server.
+# Datos efímeros (se reinicializan en cada arranque).
+USE_MEMORY_DB=true
 ```
 
 ```bash
-# 4. Cargar datos de ejemplo
-npm run seed
-
-# 5. Iniciar en modo desarrollo (frontend + backend)
+# 4. Iniciar en modo desarrollo (frontend + backend)
 npm run dev
 ```
+
+> Con `USE_MEMORY_DB=true` no necesitas tener MongoDB instalado: el server lanza una instancia en memoria y, si la base está vacía, ejecuta el seed automáticamente. Para persistencia real (Atlas o mongo local), pon `USE_MEMORY_DB=false` y configura `MONGODB_URI`. El comando `npm run seed` sigue disponible para sembrar manualmente contra una BD persistente.
 
 La aplicación estará disponible en:
 - Frontend: http://localhost:5173
@@ -92,20 +102,20 @@ La aplicación estará disponible en:
 
 ### Render.com
 
-1. Crear cuenta en [Render.com](https://render.com)
-2. Nuevo **Web Service** → conectar repositorio Git
-3. Configurar:
-   - **Build Command:** `npm run build`
-   - **Start Command:** `npm start`
-4. Agregar variables de entorno:
+El repositorio incluye `render.yaml` (Blueprint), por lo que Render configura el servicio automáticamente:
+
+1. Crear cuenta en [Render.com](https://render.com) (Sign up with GitHub)
+2. Dashboard → **+ Add new** → **Blueprint** → conectar el repositorio
+3. Render detecta `render.yaml` y crea un Web Service llamado `canvet`
+4. Completar la única variable marcada como secreto:
    ```
    MONGODB_URI=<tu-cadena-atlas>
-   JWT_SECRET=canvet_secret_key_2026
-   NODE_ENV=production
    ```
-5. Desplegar
+5. **Apply** → Render instala dependencias, construye el frontend y arranca el server
 
-> En producción, el backend de Express sirve el frontend React como archivos estáticos.
+`JWT_SECRET` se genera aleatoriamente en cada despliegue. `NODE_ENV=production` y `USE_MEMORY_DB=false` ya quedan fijados por el Blueprint.
+
+> En producción, el backend de Express sirve el frontend React compilado (`client/dist`) como archivos estáticos. Si la base está vacía en el primer arranque, se ejecuta el seed automáticamente.
 
 ## Estructura del Proyecto
 
